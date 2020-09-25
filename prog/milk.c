@@ -1,50 +1,35 @@
 #include <stdio.h>
 
-int minCount(int arrayPrice[], int size) {
-    int min = 0;
-    
-    for ( int j = 1; j < size; j++ ) {
-        if ( arrayPrice[j] != 'a' && arrayPrice[j] < arrayPrice[min] ) {
-            min = j;
-        }
-    }
-    return min;
-}
-
 int main() {
-    int sizearray = 100000000;
-    long long farmersQuantity;
-    long long amountNeeded;
-    long arrayAmount[sizearray];
-    int arrayPrice[sizearray];
-    unsigned long minPrice = 0;
-    unsigned long price1;
-    int size, min;
+    int sizearray = 1001;
+    int array[sizearray];
+    int amount, price, i, j;
+    long long farmersQuantity, amountNeeded;
+    long long minPrice = 0;
+    long long price1;
     FILE *in = fopen("task.in", "r");
     FILE *out = fopen("task.out", "w");
     
+    for ( i = 0; i < sizearray; i++ ) {
+        array[i] = 0;
+    }
+    
     fscanf(in, "%lld %lld\n", &farmersQuantity, &amountNeeded);
     
-    for ( size = 0; fscanf(in, "%li %d\n", &arrayAmount[size], &arrayPrice[size]) != EOF; size++ ) {
-        if ( arrayPrice[size] > 1000 ) {
-            arrayPrice[size] = 'a';
-            arrayAmount[size] = 'a';
+    for ( i = 0, j = 1; fscanf(in, "%d %d\n", &amount, &price) != EOF; i += 2, j += 2 ) {
+        if ( j % 2 != 0 && price <= 1000 ) {
+            array[price] += amount;
         }
     }
-    for ( int i = 0; i < farmersQuantity; i++ ) {
-        if ( amountNeeded != 0 ) {
-            min = minCount(arrayPrice, size);
-            
-            if ( arrayAmount[min] < amountNeeded ) {
-                amountNeeded = amountNeeded - arrayAmount[min];
-                price1 = arrayAmount[min] * arrayPrice[min];
-                arrayAmount[min] = 'a';
-                arrayPrice[min] = 'a';
+    
+    for ( int k = 1; k <= i; k++ ) {
+        if ( amountNeeded != 0 && array[k] != 0 ) {
+            if ( array[k] != 0 && array[k] <= amountNeeded ) {
+                amountNeeded -= array[k];
+                price1 = k * array[k];
             } else {
-                price1 = amountNeeded * arrayPrice[min];
+                price1 = amountNeeded * k;
                 amountNeeded -= amountNeeded;
-                arrayAmount[min] = 'a';
-                arrayPrice[min] = 'a';
             }
             minPrice += price1;
         }
@@ -53,8 +38,38 @@ int main() {
     if ( amountNeeded != 0 ) {
         minPrice = 0;
     }
-    fprintf(out, "%lu\n", minPrice);
+    fprintf(out, "%lld\n", minPrice);
     fclose(in);
     fclose(out);
     return 0;
 }
+
+
+// Условие задачи
+// Молочная компания каждый день покупает молоко у фермеров. 
+// У каждого из <farmerQuantity> фермеров есть <amount> литров молока по цене <price>. 
+// Найти минимальную стоимость <minPrice>, за которую возможно приобрести <amountNeeded> литров молока. 
+// В случае, если у фермеров недостаточно молока, вывести в качестве <minPrice> значение 0.
+
+// В файле task.in заданы целые числа:
+// <farmerQuantity> <amountNeeded>
+// <amount1> <price1>
+// <amount2> <price2>
+// .....
+// <amountN> <priceN>
+
+// Вывести minPrice в task.out.
+
+// Ограничения:
+// 0 <= farmerQuantity <= 100 000 000
+// 0 <= amountNeeded <= 300 000 000
+// 0 <= amount <= 300 000 000
+// 1 <= price <= 1 000
+
+// Пример ввода
+// 3 10
+// 5 1
+// 8 2
+// 8 3
+// Пример вывода
+// 15
