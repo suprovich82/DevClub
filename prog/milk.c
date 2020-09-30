@@ -2,12 +2,12 @@
 
 int main() {
     int sizearray = 1001;
-    int array[sizearray];
-    int amount, price, i, j;
+    long long array[sizearray];
+    int price, i, j;
     long long farmersQuantity, amountNeeded;
     long long minPrice = 0;
-    long long price1;
-    FILE *in = fopen("task.in", "r");
+    long long price1, amount=0;
+    FILE *in = fopen("task.in.max", "r");
     FILE *out = fopen("task.out", "w");
     
     for ( i = 0; i < sizearray; i++ ) {
@@ -16,25 +16,30 @@ int main() {
     
     fscanf(in, "%lld %lld\n", &farmersQuantity, &amountNeeded);
     
-    for ( i = 0, j = 1; fscanf(in, "%d %d\n", &amount, &price) != EOF; i += 2, j += 2 ) {
-        if ( j % 2 != 0 && price <= 1000 ) {
+    for ( i = 1; i <= farmersQuantity && fscanf(in, "%lld %d\n", &amount, &price) != EOF; i++ ) {
+        if ( price <= 1000 ) {
             array[price] += amount;
         }
     }
     
-    for ( int k = 1; k <= i; k++ ) {
-        if ( amountNeeded != 0 && array[k] != 0 ) {
-            if ( array[k] != 0 && array[k] <= amountNeeded ) {
-                amountNeeded -= array[k];
-                price1 = k * array[k];
-            } else {
+    for ( int k = 1; amountNeeded != 0 && k < sizearray; k++ ) {
+        amount = array[k];
+        if ( amount > 0 ) {
+            printf("array[%d] = %lld\n", k, amount);
+        }
+        
+        if ( amount != 0 ) {
+            if ( amount < amountNeeded ) {
+                amountNeeded -= amount;
+                price1 = k * amount;
+            } else { 
                 price1 = amountNeeded * k;
-                amountNeeded -= amountNeeded;
+                amountNeeded = 0;
             }
+            
             minPrice += price1;
         }
     }
-    
     if ( amountNeeded != 0 ) {
         minPrice = 0;
     }
